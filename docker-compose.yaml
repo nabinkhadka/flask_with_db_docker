@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  postgres:
+    restart: always
+    # Pull this image from dockerhub.com
+    image: postgres:10
+    # Define the network to connect this service to
+    networks:
+      - app_network
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    # Store db volumes to persist across docker-compose up and down commands.
+    volumes:
+      - ./postgres-data/postgres:/var/lib/postgresql/data
+#    ports: I don't want to expose the port to my host machine
+#      - "5432:5432"
+  api-server:
+    # I added this because this api-server service depends on database and it may fail to restart first time as db may not be ready yet
+    restart: always
+    # This means to build image for api-server using Dockerfile present in current directory
+    build: .
+    # Define the network to connect this service to
+    networks:
+      - app_network
+    # Something is already running in my laptop, so I used 5001 port to map 5000 port i.e hostmachine's port 50001 is mapped to container's port 5000
+    ports:
+      - "5001:5000"
+    # This will allow sharing your IDE's code changes with the one inside the docker container.
+    volumes:
+      - ./api-server:/api-server
+    depends_on:
+    - postgres
+    # This is equivalent to running a command after going inside the container. I have ran the flask server.
+    entrypoint: ["python", "app.py"]
+
+# Define a network. Both the above services will be in that Docker network and can communicate internally
+networks:
+  app_network:
+    driver: bridge
