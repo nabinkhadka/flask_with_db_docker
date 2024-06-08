@@ -13,4 +13,4 @@ WORKDIR /api-server
 # Copy all files from your laptop to the working directory in this image we are building
 COPY . /api-server
 # Install python libraries we need in the image we are building
-RUN pip install flask psycopg2
+RUN pip install flask psycopg2 PyJwt
