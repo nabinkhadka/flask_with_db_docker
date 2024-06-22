@@ -4,3 +4,4 @@ PyJwt
 pandas
 lxml
 numpy
+flask-sqlalchemy
